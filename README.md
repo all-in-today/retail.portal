@@ -1,0 +1,31 @@
+# ALL IN Retail Portal
+
+櫃位人員每日早班盤點入口。送出後寫入營運試算表 `[retail]` 分頁，`Bender` 第 11–14 列自動彙總五店庫存。
+
+## 架構
+
+| 層 | 說明 |
+|---|---|
+| 前端 | `index.html`（GitHub Pages 靜態頁，手機優先） |
+| API | `apps-script/Code.gs`（綁定試算表的 Apps Script 網頁應用程式） |
+| 資料 | `[retail]` 五店區塊（信義／天母／竹北／中港／大安）、`retail_log` 送出明細 |
+
+## 盤點邏輯
+
+- 歸屬日期預設「昨天」：早班盤點記錄前一日進貨與晚班庫存
+- 全食飲每口味分「舊／新」兩列，各自記錄效期（如 1104）
+- 合計 = 櫃位 + 倉庫；低於最低水位標紅
+- 異動（轉試喝、破瓶、公關、報備…）對應紙本表 1–10 欄，用途名稱寫入各店「用途說明」列
+- 同一店、同一日期重複送出會覆蓋 `[retail]`，`retail_log` 保留每次送出
+
+## 部署
+
+1. 試算表 → 擴充功能 → Apps Script → 貼上 `apps-script/Code.gs`
+2. 專案設定 → 指令碼屬性 → 新增 `PORTAL_PIN`
+3. 部署 → 新增部署作業 → 網頁應用程式（執行身分：我／存取權：任何人）
+4. 將網址填入 `config.js` 的 `API_URL`
+5. GitHub repo → Settings → Pages → Branch: `main` / root
+
+## Bender 對應
+
+`Bender!D11:I14` 以 `SUMIFS` 依「系列＋商品」加總 `[retail]` J 欄（合計），全食飲舊＋新合併計算。

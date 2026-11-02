@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4F0E8">
+<title>ALL IN Retail Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F0E8; --paper:#FBF9F5; --ink:#2A2724; --mute:#8B847A; --line:#E2DCD1;
+  --accent:#6E5B43; --accent-soft:#EDE5D8; --warn:#A8452E; --warn-soft:#F6E4DE; --ok:#4F6B4A;
+  --in:#F1ECE3;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",-apple-system,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 120px}
+header{padding:12px 0 20px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.brand{font-family:"Noto Serif TC",serif;font-size:13px;letter-spacing:.32em;color:var(--mute)}
+h1{font-family:"Noto Serif TC",serif;font-weight:500;font-size:24px;margin:6px 0 2px;letter-spacing:.04em}
+.sub{color:var(--mute);font-size:13px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.label{font-size:12px;color:var(--mute);letter-spacing:.08em;margin-bottom:8px}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.seg button{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;height:44px;font:inherit;font-weight:500;cursor:pointer}
+.seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+input[type=text],input[type=date],input[type=password],select{width:100%;height:44px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 12px;font:inherit;color:var(--ink)}
+.hint{font-size:12px;color:var(--mute);margin-top:6px}
+.series h2{font-family:"Noto Serif TC",serif;font-weight:500;font-size:17px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:baseline}
+.series h2 small{font-family:"Noto Sans TC";font-size:12px;color:var(--mute);font-weight:400}
+.grid{display:grid;grid-template-columns:minmax(64px,1fr) repeat(5,minmax(44px,52px));gap:4px;align-items:center}
+.gh{font-size:11px;color:var(--mute);text-align:center;padding-bottom:2px}
+.gh.in{color:var(--accent)}
+.name{font-size:14px;font-weight:500;line-height:1.25}
+.name .tier{display:inline-block;font-size:11px;font-weight:500;padding:0 6px;border-radius:4px;margin-left:2px;background:var(--accent-soft);color:var(--accent)}
+.name .meta{display:block;font-size:11px;color:var(--mute);font-weight:400}
+.name .meta.low{color:var(--warn)}
+.num{width:100%;height:44px;border:1px solid var(--line);border-radius:6px;background:#fff;text-align:center;font:inherit;font-size:16px;color:var(--ink);padding:0;-moz-appearance:textfield}
+.num::-webkit-outer-spin-button,.num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.num.in{background:var(--in)}
+.num::placeholder{color:#C9C1B4}
+.flavor{grid-column:1/-1;font-size:14px;font-weight:700;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline}
+.flavor:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.flavor .meta{font-size:11px;font-weight:400;color:var(--mute)}
+.flavor .meta.low{color:var(--warn)}
+.exp{grid-column:1/-1;display:none}
+.expin{height:32px;border:1px solid var(--line);border-radius:6px;width:76px;text-align:center;font:inherit;font-size:13px;background:#fff;margin-top:4px}
+.uses .use{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.uses .use:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.item{display:grid;grid-template-columns:1fr 72px 36px;gap:6px;margin-top:6px}
+.btn{height:44px;border-radius:8px;border:1px solid var(--ink);background:transparent;color:var(--ink);font:inherit;font-weight:500;padding:0 16px;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.ghost{border-color:var(--line);color:var(--mute)}
+.btn.sm{height:36px;font-size:13px;padding:0 12px}
+.x{height:44px;border:0;background:transparent;color:var(--mute);font-size:20px;cursor:pointer}
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(244,240,232,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.bar .in{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.bar .status{flex:1;font-size:12px;color:var(--mute)}
+.notice{border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:16px}
+.notice.warn{background:var(--warn-soft);color:var(--warn)}
+.notice.ok{background:#E5EBDF;color:var(--ok)}
+.notice.info{background:var(--accent-soft);color:var(--accent)}
+.review{position:fixed;inset:0;background:rgba(42,39,36,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.review.show{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:640px;max-height:86vh;overflow:auto;border-radius:16px 16px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+.sheet h3{font-family:"Noto Serif TC",serif;font-weight:500;margin:0 0 12px}
+.sum{width:100%;border-collapse:collapse;font-size:13px}
+.sum td,.sum th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}
+.sum td:first-child,.sum th:first-child{text-align:left}
+.sum th{font-weight:500;color:var(--mute);font-size:12px}
+.sum tr.low td{color:var(--warn)}
+.hidden{display:none!important}
+.lock{max-width:320px;margin:15vh auto 0;text-align:center}
+.lock input{text-align:center;letter-spacing:.4em;margin:16px 0}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header>
+    <div class="brand">ALL IN · RETAIL</div>
+    <h1>每日盤點</h1>
+    <div class="sub">早班盤點前一日晚班庫存，送出後同步至營運端補貨表。</div>
+  </header>
+
+  <div id="lock" class="lock hidden">
+    <div class="label">櫃位 PIN</div>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off">
+    <button class="btn primary" style="width:100%" id="pinGo">進入</button>
+    <div class="hint" id="pinMsg"></div>
+  </div>
+
+  <div id="main" class="hidden">
+    <div id="msg"></div>
+
+    <section class="card">
+      <div class="label">櫃位</div>
+      <div class="seg" id="stores"></div>
+      <div class="row2">
+        <div>
+          <div class="label">歸屬日期</div>
+          <input type="date" id="date">
+          <div class="hint" id="dateHint"></div>
+        </div>
+        <div>
+          <div class="label">盤點人</div>
+          <input type="text" id="staff" placeholder="姓名" autocomplete="name">
+        </div>
+      </div>
+    </section>
+
+    <div id="form"></div>
+
+    <section class="card uses hidden" id="usesCard">
+      <h2 class="series" style="margin:0"><span style="font-family:'Noto Serif TC',serif;font-size:17px;font-weight:500">異動登記</span></h2>
+      <div class="hint" style="margin:2px 0 12px">轉試喝、破瓶、公關、報備等非銷售出庫。每一種用途對應紙本表的 1–10 欄。</div>
+      <div id="uses"></div>
+      <button class="btn sm" id="addUse" style="margin-top:12px">＋ 新增用途</button>
+    </section>
+  </div>
+</div>
+
+<div class="bar hidden" id="bar"><div class="in">
+  <div class="status" id="status">尚未選擇櫃位</div>
+  <button class="btn primary" id="reviewBtn" disabled>檢查並送出</button>
+</div></div>
+
+<div class="review" id="review"><div class="sheet">
+  <h3>送出前確認</h3>
+  <div id="reviewBody"></div>
+  <div style="display:flex;gap:10px;margin-top:16px">
+    <button class="btn ghost" id="back" style="flex:1">返回修改</button>
+    <button class="btn primary" id="submit" style="flex:2">確認送出</button>
+  </div>
+</div></div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+const API = (window.PORTAL_CONFIG||{}).API_URL || '';
+const STORES = ['信義','天母','竹北','中港','大安'];
+const REASONS = ['轉試喝','破瓶','變質','客服補償','辦公室收回','櫃位調度','公關','報備','報廢','即期品','夥伴自購'];
+const MAX_USES = 10;
+const $ = s => document.querySelector(s);
+const store = { get:k=>{try{return localStorage.getItem(k)}catch(e){return null}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}, del:k=>{try{localStorage.removeItem(k)}catch(e){}} };
+
+let state = { store:null, lines:[], uses:[], loaded:null };
+const key = l => [l.series,l.product,l.tier||''].join('|');
+const label = l => (l.series==='全食飲'?l.product:l.product);
+
+/* ---------- API ---------- */
+async function apiGet(params){
+  const u = new URL(API); Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v));
+  const r = await fetch(u.toString()); const j = await r.json();
+  if(!j.ok) throw new Error(j.error||'讀取失敗'); return j;
+}
+async function apiPost(body){
+  const r = await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+  const j = await r.json(); if(!j.ok) throw new Error(j.error||'送出失敗'); return j;
+}
+
+/* ---------- 日期 ---------- */
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return ymd(d)}
+function md(s){const p=s.split('-');return +p[1]+'/'+(+p[2])}
+function dateHint(){
+  const v=$('#date').value; if(!v) return;
+  const d=new Date(v+'T00:00:00'); d.setDate(d.getDate()+1);
+  $('#dateHint').textContent='記錄 '+md(v)+' 進貨與晚班庫存（'+md(ymd(d))+' 早班盤點）';
+}
+
+/* ---------- 訊息 ---------- */
+function msg(text,type){ $('#msg').innerHTML = text?'<div class="notice '+(type||'info')+'">'+text+'</div>':''; }
+
+/* ---------- PIN ---------- */
+function needPin(){ $('#lock').classList.remove('hidden'); $('#main').classList.add('hidden'); $('#bar').classList.add('hidden'); setTimeout(()=>$('#pin').focus(),50); }
+$('#pinGo').onclick = async ()=>{
+  const p=$('#pin').value.trim(); $('#pinMsg').textContent='驗證中…';
+  try{ await apiGet({pin:p}); store.set('portal_pin',p); $('#lock').classList.add('hidden'); boot(); }
+  catch(e){ $('#pinMsg').textContent=e.message; }
+};
+$('#pin').addEventListener('keydown',e=>{if(e.key==='Enter')$('#pinGo').click()});
+
+/* ---------- 初始化 ---------- */
+function boot(){
+  $('#main').classList.remove('hidden'); $('#bar').classList.remove('hidden');
+  $('#stores').innerHTML = STORES.map(s=>'<button data-s="'+s+'">'+s+'</button>').join('');
+  $('#stores').onclick = e=>{ const b=e.target.closest('button'); if(b) pickStore(b.dataset.s); };
+  $('#date').value = yesterday(); dateHint();
+  $('#date').onchange = ()=>{ dateHint(); if(state.store) pickStore(state.store); };
+  $('#staff').value = store.get('portal_staff')||'';
+  $('#staff').oninput = ()=>{ store.set('portal_staff',$('#staff').value); saveDraft(); };
+  const last = store.get('portal_store'); if(last && STORES.includes(last)) pickStore(last);
+}
+
+async function pickStore(s){
+  state.store=s; store.set('portal_store',s);
+  [...$('#stores').children].forEach(b=>b.classList.toggle('on',b.dataset.s===s));
+  $('#form').innerHTML='<div class="card" style="color:var(--mute)">讀取 '+s+' 資料中…</div>';
+  $('#usesCard').classList.add('hidden'); $('#reviewBtn').disabled=true; msg('');
+  try{
+    const j = await apiGet({action:'load',store:s,pin:store.get('portal_pin')||''});
+    state.loaded=j;
+    const sameDay = j.meta.date===$('#date').value;
+    state.lines = j.lines.map(l=>({
+      series:l.series, product:l.product, tier:l.tier, min:l.min,
+      prevShelf:l.shelf, prevWh:l.wh,
+      expiry: l.expiry||'',
+      inShelf: sameDay?l.inShelf:'', inWh: sameDay?l.inWh:'', shelf: sameDay?l.shelf:'', wh: sameDay?l.wh:'', tasting: sameDay?l.tasting:''
+    }));
+    state.uses = [];
+    if(sameDay){
+      j.reasons.forEach((r,i)=>{ if(!r) return; const items={}; j.lines.forEach(l=>{ const v=l.uses[i]; if(v!==''&&v!==null) items[key(l)]=v; }); state.uses.push({reason:r,items}); });
+      msg(s+' 已於 '+j.meta.updated+' 由 '+(j.meta.staff||'—')+' 送出 '+md(j.meta.date)+' 的盤點。修改後再次送出將覆蓋。','info');
+    } else if(j.meta.date){
+      msg('灰色數字為上次盤點（'+md(j.meta.date)+'）的庫存，供對照參考。','info');
+    }
+    const d = loadDraft(); if(d){ state.lines.forEach(l=>{ const x=d.lines[key(l)]; if(x) Object.assign(l,x); }); state.uses=d.uses||state.uses; msg('已還原未送出的草稿。','info'); }
+    render();
+  }catch(e){
+    if(/PIN/.test(e.message)){ store.del('portal_pin'); needPin(); return; }
+    $('#form').innerHTML=''; msg('讀取失敗：'+e.message,'warn');
+  }
+}
+
+/* ---------- 草稿 ---------- */
+const draftKey = ()=>'portal_draft|'+state.store+'|'+$('#date').value;
+function saveDraft(){ if(!state.store||!state.lines.length) return; const lines={}; state.lines.forEach(l=>lines[key(l)]={expiry:l.expiry,inShelf:l.inShelf,inWh:l.inWh,shelf:l.shelf,wh:l.wh,tasting:l.tasting}); store.set(draftKey(),JSON.stringify({lines,uses:state.uses})); }
+function loadDraft(){ try{ return JSON.parse(store.get(draftKey())||'null'); }catch(e){ return null; } }
+
+/* ---------- 表單 ---------- */
+const FIELDS=[['inShelf','進櫃',1],['inWh','進倉',1],['shelf','櫃位',0],['wh','倉庫',0],['tasting','試吃',0]];
+function head(){ return '<div></div>'+FIELDS.map(f=>'<div class="gh'+(f[2]?' in':'')+'">'+f[1]+'</div>').join(''); }
+function inputs(l,i){
+  return FIELDS.map(([f])=>{
+    const ph = f==='shelf'?l.prevShelf:f==='wh'?l.prevWh:'';
+    return '<input class="num'+(f.startsWith('in')?' in':'')+'" inputmode="numeric" pattern="[0-9]*" data-i="'+i+'" data-f="'+f+'" value="'+(l[f]===''||l[f]==null?'':l[f])+'" placeholder="'+(ph===''||ph==null?'':ph)+'">';
+  }).join('');
+}
+function total(ls){ let t=0,any=false; ls.forEach(l=>{ [l.shelf,l.wh].forEach(v=>{ if(v!==''&&v!=null){t+=+v;any=true;} }); }); return any?t:null; }
+function metaText(ls,min){ const t=total(ls); if(t===null) return min?'水位 '+min:''; return '合計 '+t+(min?' ／ 水位 '+min:''); }
+function isLow(ls,min){ const t=total(ls); return t!==null && min!=='' && min!=null && t<+min; }
+
+function render(){
+  const groups={}; state.lines.forEach((l,i)=>{ (groups[l.series]=groups[l.series]||[]).push([l,i]); });
+  let html='';
+  Object.entries(groups).forEach(([series,arr])=>{
+    html+='<section class="card series"><h2>'+series+(series==='全食飲'?'<small>每口味分舊／新兩個效期</small>':'')+'</h2><div class="grid">'+head();
+    if(series==='全食飲'){
+      const byP={}; arr.forEach(([l,i])=>{(byP[l.product]=byP[l.product]||[]).push([l,i])});
+      Object.entries(byP).forEach(([p,ls])=>{
+        const min = ls[0][0].min;
+        html+='<div class="flavor" data-p="'+p+'"><span>'+p+'</span><span class="meta'+(isLow(ls.map(x=>x[0]),min)?' low':'')+'">'+metaText(ls.map(x=>x[0]),min)+'</span></div>';
+        ls.forEach(([l,i])=>{
+          html+='<div class="name"><span class="tier">'+l.tier+'</span><br><input class="expin" data-i="'+i+'" data-f="expiry" placeholder="效期" value="'+(l.expiry||'')+'" inputmode="numeric"></div>'+inputs(l,i);
+        });
+      });
+    } else {
+      arr.forEach(([l,i])=>{
+        html+='<div class="name">'+l.product+'<span class="meta'+(isLow([l],l.min)?' low':'')+'" data-m="'+i+'">'+metaText([l],l.min)+'</span></div>'+inputs(l,i);
+      });
+    }
+    html+='</div></section>';
+  });
+  $('#form').innerHTML=html;
+  $('#usesCard').classList.remove('hidden');
+  renderUses(); refreshStatus();
+}
+
+$('#form').addEventListener('input',e=>{
+  const t=e.target; if(!t.dataset.f) return;
+  let v=t.value; if(t.dataset.f!=='expiry'){ v=v.replace(/[^0-9]/g,''); t.value=v; }
+  const l=state.lines[+t.dataset.i]; l[t.dataset.f]= v===''?'':(t.dataset.f==='expiry'?v:+v);
+  // 更新合計
+  if(l.series==='全食飲'){
+    const ls=state.lines.filter(x=>x.series==='全食飲'&&x.product===l.product); const el=document.querySelector('.flavor[data-p="'+l.product+'"] .meta');
+    el.textContent=metaText(ls,ls[0].min); el.classList.toggle('low',isLow(ls,ls[0].min));
+  } else {
+    const el=document.querySelector('[data-m="'+t.dataset.i+'"]'); el.textContent=metaText([l],l.min); el.classList.toggle('low',isLow([l],l.min));
+  }
+  saveDraft(); refreshStatus();
+});
+
+/* ---------- 異動 ---------- */
+function lineOptions(sel){
+  return '<option value="">選擇品項</option>'+state.lines.map(l=>{const k=key(l);return '<option value="'+k+'"'+(k===sel?' selected':'')+'>'+l.series+'・'+l.product+(l.tier?'（'+l.tier+(l.expiry?' '+l.expiry:'')+'）':'')+'</option>'}).join('');
+}
+function renderUses(){
+  $('#uses').innerHTML = state.uses.map((u,ui)=>{
+    const custom = u.reason && !REASONS.includes(u.reason);
+    const items = Object.entries(u.items); if(!items.length) items.push(['','']);
+    return '<div class="use" data-u="'+ui+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center"><div class="label" style="margin:0">用途 '+(ui+1)+'</div><button class="x" data-act="delUse">×</button></div>'+
+      '<div class="chips">'+REASONS.map(r=>'<button class="chip'+(u.reason===r?' on':'')+'" data-act="reason" data-r="'+r+'">'+r+'</button>').join('')+'</div>'+
+      '<input type="text" data-act="custom" placeholder="其他用途（自行輸入）" value="'+(custom?u.reason:'')+'">'+
+      items.map(([k,v],ii)=>'<div class="item"><select data-act="itemKey" data-ii="'+ii+'">'+lineOptions(k)+'</select><input class="num" inputmode="numeric" data-act="itemQty" data-ii="'+ii+'" value="'+(v===''?'':v)+'" placeholder="數量"><button class="x" data-act="delItem" data-ii="'+ii+'">−</button></div>').join('')+
+      '<button class="btn sm ghost" data-act="addItem" style="margin-top:8px">＋ 品項</button></div>';
+  }).join('') || '<div class="hint">無異動可略過。</div>';
+  $('#addUse').disabled = state.uses.length>=MAX_USES;
+}
+function itemsArr(u){ return Object.entries(u.items); }
+function setItems(u,arr){ u.items={}; arr.forEach(([k,v])=>{ u.items[k]=v; }); }
+$('#addUse').onclick=()=>{ state.uses.push({reason:'',items:{'':''}}); renderUses(); saveDraft(); };
+$('#uses').addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return; const box=t.closest('.use'); const u=state.uses[+box.dataset.u];
+  const act=t.dataset.act;
+  if(act==='reason'){ u.reason=t.dataset.r; }
+  else if(act==='delUse'){ state.uses.splice(+box.dataset.u,1); }
+  else if(act==='addItem'){ const a=itemsArr(u); a.push(['__new'+a.length,'']); setItems(u,a); }
+  else if(act==='delItem'){ const a=itemsArr(u); a.splice(+t.dataset.ii,1); setItems(u,a); }
+  else return;
+  renderUses(); saveDraft(); refreshStatus();
+});
+$('#uses').addEventListener('change',e=>{
+  const t=e.target; const box=t.closest('.use'); if(!box) return; const u=state.uses[+box.dataset.u];
+  if(t.dataset.act==='custom'){ if(t.value.trim()) u.reason=t.value.trim(); renderUses(); }
+  if(t.dataset.act==='itemKey'){ const a=itemsArr(u); a[+t.dataset.ii][0]=t.value; setItems(u,a); renderUses(); }
+  saveDraft(); refreshStatus();
+});
+$('#uses').addEventListener('input',e=>{
+  const t=e.target; if(t.dataset.act!=='itemQty') return; t.value=t.value.replace(/[^0-9]/g,'');
+  const u=state.uses[+t.closest('.use').dataset.u]; const a=itemsArr(u); a[+t.dataset.ii][1]=t.value===''?'':+t.value; setItems(u,a); saveDraft();
+});
+
+/* ---------- 狀態列 ---------- */
+function blanks(){ return state.lines.filter(l=>l.shelf===''||l.shelf==null).length; }
+function refreshStatus(){
+  if(!state.lines.length){ $('#status').textContent='尚未選擇櫃位'; return; }
+  const b=blanks(); $('#status').textContent = state.store+'・'+md($('#date').value)+'　'+(b?'櫃位尚有 '+b+' 項未填':'櫃位已全數填寫');
+  $('#reviewBtn').disabled=false;
+}
+
+/* ---------- 送出 ---------- */
+function cleanUses(){
+  return state.uses.filter(u=>u.reason).map(u=>{ const items={}; Object.entries(u.items).forEach(([k,v])=>{ if(k&&!k.startsWith('__new')&&v!==''&&v!=null) items[k]=(items[k]||0)+(+v); }); return {reason:u.reason,items}; }).filter(u=>Object.keys(u.items).length);
+}
+$('#reviewBtn').onclick=()=>{
+  const errs=[];
+  if(!$('#staff').value.trim()) errs.push('請填寫盤點人');
+  const dupR = cleanUses().map(u=>u.reason); if(new Set(dupR).size!==dupR.length) errs.push('用途名稱重複，請合併為同一用途');
+  state.uses.forEach((u,i)=>{ if(!u.reason && Object.values(u.items).some(v=>v!=='')) errs.push('用途 '+(i+1)+' 尚未選擇類別'); });
+  const sf=state.lines.filter(l=>l.series==='全食飲'&&((l.shelf!==''&&l.shelf!=null)||(l.wh!==''&&l.wh!=null))&&+l.shelf+(+l.wh||0)>0&&!l.expiry);
+  if(sf.length) errs.push('全食飲有庫存但未填效期：'+sf.map(l=>l.product+'（'+l.tier+'）').join('、'));
+  let h='';
+  if(errs.length) h+='<div class="notice warn">'+errs.join('<br>')+'</div>';
+  const b=blanks(); if(b) h+='<div class="notice info">櫃位有 '+b+' 項空白，送出後以空白（0）計算。</div>';
+  h+='<div class="sub" style="margin-bottom:8px">'+state.store+'　｜　'+md($('#date').value)+' 晚班庫存　｜　'+($('#staff').value||'—')+'</div>';
+  h+='<table class="sum"><tr><th>品項</th><th>進櫃</th><th>進倉</th><th>櫃位</th><th>倉庫</th><th>合計</th></tr>';
+  state.lines.forEach(l=>{ const t=total([l]); const low=l.series!=='全食飲'&&isLow([l],l.min);
+    h+='<tr'+(low?' class="low"':'')+'><td>'+l.series.slice(0,3)+'・'+l.product+(l.tier?'（'+l.tier+(l.expiry?' '+l.expiry:'')+'）':'')+'</td><td>'+(l.inShelf??'')+'</td><td>'+(l.inWh??'')+'</td><td>'+(l.shelf??'')+'</td><td>'+(l.wh??'')+'</td><td>'+(t??'')+'</td></tr>'; });
+  h+='</table>';
+  const cu=cleanUses(); if(cu.length){ h+='<div class="label" style="margin-top:14px">異動</div>'; cu.forEach((u,i)=>{ h+='<div style="font-size:13px;margin-bottom:4px">'+(i+1)+'. '+u.reason+'：'+Object.entries(u.items).map(([k,v])=>k.split('|')[1]+(k.split('|')[2]?'('+k.split('|')[2]+')':'')+'×'+v).join('、')+'</div>'; }); }
+  $('#reviewBody').innerHTML=h; $('#submit').disabled=errs.length>0;
+  $('#review').classList.add('show');
+};
+$('#back').onclick=()=>$('#review').classList.remove('show');
+$('#submit').onclick=async ()=>{
+  $('#submit').disabled=true; $('#submit').textContent='送出中…';
+  try{
+    const r = await apiPost({ pin:store.get('portal_pin')||'', store:state.store, date:$('#date').value, staff:$('#staff').value.trim(),
+      lines: state.lines.map(l=>({series:l.series,product:l.product,tier:l.tier,expiry:l.expiry,inShelf:l.inShelf,inWh:l.inWh,shelf:l.shelf,wh:l.wh,tasting:l.tasting})),
+      uses: cleanUses() });
+    store.del(draftKey());
+    $('#review').classList.remove('show');
+    msg('已送出 '+state.store+' '+md($('#date').value)+' 盤點（'+r.updated+'），營運端補貨表已同步。','ok');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){ $('#reviewBody').insertAdjacentHTML('afterbegin','<div class="notice warn">送出失敗：'+e.message+'</div>'); }
+  $('#submit').textContent='確認送出'; $('#submit').disabled=false;
+};
+
+/* ---------- start ---------- */
+if(!API){ $('#main').classList.remove('hidden'); msg('尚未設定 API_URL（config.js）。請先部署 Apps Script 並填入網址。','warn'); return; }
+if(store.get('portal_pin')!==null) boot();
+else apiGet({}).then(()=>{store.set('portal_pin','');boot();}).catch(()=>needPin());
+})();
+</script>
+</body>
+</html>
