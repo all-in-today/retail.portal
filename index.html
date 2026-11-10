@@ -139,6 +139,8 @@ input[type=text],input[type=date],input[type=password]{width:100%;height:44px;bo
 (function(){
 const API=(window.PORTAL_CONFIG||{}).API_URL||'';
 const STORES=['信義','天母','竹北','中港','大安'];
+// 已下架品項：不顯示於盤點（試算表列保留，送出時以空白計）
+const HIDDEN=['小全頭|黃豆'];
 const MODE={
   count:{name:'庫存盤點',staff:'盤點人',date:'盤點日期',a:'shelf',b:'wh',ha:'櫃位',hb:'倉庫'}
 };
@@ -186,6 +188,7 @@ async function pickStore(s){
   $('#form').innerHTML='<div class="card" style="color:var(--mute)">讀取 '+s+' 資料中…</div>';msg('');
   try{
     S.data=await apiGet({action:'load',store:s,pin:ls.get('portal_pin')||''});
+    S.data.lines=S.data.lines.filter(l=>!HIDDEN.includes(l.series+'|'+l.product));
     document.querySelectorAll('.mode').forEach(b=>b.disabled=false);
     pickMode('count',S.mode==='count');
   }catch(e){
