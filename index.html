@@ -89,7 +89,7 @@ input[type=text],input[type=date],input[type=password]{width:100%;height:44px;bo
   <header>
     <div class="brand">ALL IN · RETAIL</div>
     <h1>櫃位庫存</h1>
-    <div class="sub">早班盤點與當日進貨分開送出，同步至營運端補貨表。</div>
+    <div class="sub">早班盤點前一日晚班庫存，同步至營運端補貨表。</div>
   </header>
 
   <div id="lock" class="lock hidden">
@@ -104,10 +104,6 @@ input[type=text],input[type=date],input[type=password]{width:100%;height:44px;bo
     <section class="card">
       <div class="label">櫃位</div>
       <div class="seg" id="stores"></div>
-      <div class="modes">
-        <button class="mode" data-m="count" disabled><b>庫存盤點</b><span>早班｜前一日晚班庫存</span></button>
-        <button class="mode" data-m="arrival" disabled><b>當日進貨</b><span>到貨｜進櫃・進倉</span></button>
-      </div>
       <div class="row2 hidden" id="who">
         <div>
           <div class="label" id="dateLabel">日期</div>
@@ -144,8 +140,7 @@ input[type=text],input[type=date],input[type=password]{width:100%;height:44px;bo
 const API=(window.PORTAL_CONFIG||{}).API_URL||'';
 const STORES=['信義','天母','竹北','中港','大安'];
 const MODE={
-  count:{name:'庫存盤點',staff:'盤點人',date:'盤點日期',a:'shelf',b:'wh',ha:'櫃位',hb:'倉庫'},
-  arrival:{name:'當日進貨',staff:'收貨人',date:'進貨日期',a:'inShelf',b:'inWh',ha:'進櫃',hb:'進倉'}
+  count:{name:'庫存盤點',staff:'盤點人',date:'盤點日期',a:'shelf',b:'wh',ha:'櫃位',hb:'倉庫'}
 };
 const $=s=>document.querySelector(s);
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
@@ -164,7 +159,6 @@ const md=s=>{if(!s)return'';const p=s.split('-');return +p[1]+'/'+(+p[2])};
 function hint(){
   const v=$('#date').value;if(!v||!S.mode)return;
   if(S.mode==='count'){const d=new Date(v+'T00:00:00');d.setDate(d.getDate()+1);$('#dateHint').textContent='記錄 '+md(v)+' 晚班結束時的庫存（'+md(ymd(d))+' 早班盤點）';}
-  else $('#dateHint').textContent='記錄 '+md(v)+' 到貨。效期與櫃位現有相同 → 進櫃；不同 → 進倉。';
 }
 function msg(t,type){$('#msg').innerHTML=t?'<div class="notice '+(type||'info')+'">'+t+'</div>':''}
 
@@ -193,7 +187,7 @@ async function pickStore(s){
   try{
     S.data=await apiGet({action:'load',store:s,pin:ls.get('portal_pin')||''});
     document.querySelectorAll('.mode').forEach(b=>b.disabled=false);
-    if(S.mode)pickMode(S.mode,true);else{$('#form').innerHTML='';refresh()}
+    pickMode('count',S.mode==='count');
   }catch(e){
     if(/PIN/.test(e.message)){ls.del('portal_pin');needPin();return}
     $('#form').innerHTML='';msg('讀取失敗：'+e.message,'warn');
@@ -213,7 +207,7 @@ function pickMode(m,keepDate){
 function build(){
   if(!S.data||!S.mode)return;
   const M=MODE[S.mode],d=S.data,date=$('#date').value;
-  const meta=S.mode==='count'?d.count:d.arrival;
+  const meta=d.count;
   const same=meta.date===date;
   S.lines=d.lines.map(l=>({series:l.series,product:l.product,tier:l.tier,min:l.min,expiry:l.expiry||'',
     prevShelf:l.shelf,prevWh:l.wh,
@@ -234,9 +228,7 @@ function loadDraft(){try{return JSON.parse(ls.get(dKey())||'null')}catch(e){retu
 const v=x=>blank(x)?'':x;
 function num(l,i,f,ph){return '<input class="num" inputmode="numeric" pattern="[0-9]*" data-i="'+i+'" data-f="'+f+'" value="'+v(l[f])+'" placeholder="'+v(ph)+'">'}
 function total(arr){let t=0,any=false;arr.forEach(l=>[l.shelf,l.wh].forEach(x=>{if(!blank(x)){t+=+x;any=true}}));return any?t:null}
-function inSum(arr){let t=0;arr.forEach(l=>[l.inShelf,l.inWh].forEach(x=>{if(!blank(x))t+=+x}));return t}
 function metaText(arr,min){
-  if(S.mode==='arrival'){const t=inSum(arr);return t?'到貨 '+t:''}
   const t=total(arr);return t===null?(blank(min)?'':'水位 '+min):'合計 '+t+(blank(min)?'':' ／ 水位 '+min);
 }
 const isLow=(arr,min)=>S.mode==='count'&&total(arr)!==null&&!blank(min)&&total(arr)<+min;
@@ -284,10 +276,9 @@ $('#form').addEventListener('input',e=>{
 
 /* 狀態列 */
 function refresh(){
-  if(!S.store||!S.mode||!S.lines.length){$('#status').textContent=S.store?'請選擇「庫存盤點」或「當日進貨」':'請選擇櫃位';$('#reviewBtn').disabled=true;return}
+  if(!S.store||!S.mode||!S.lines.length){$('#status').textContent=S.store?'資料讀取中…':'請選擇櫃位';$('#reviewBtn').disabled=true;return}
   const M=MODE[S.mode];
   if(S.mode==='count'){const b=S.lines.filter(l=>blank(l.shelf)).length;$('#status').textContent=S.store+'・'+M.name+'・'+md($('#date').value)+'　'+(b?'櫃位尚有 '+b+' 項未填':'櫃位已全數填寫')}
-  else{const n=S.lines.filter(l=>!blank(l.inShelf)||!blank(l.inWh)).length;$('#status').textContent=S.store+'・'+M.name+'・'+md($('#date').value)+'　已填 '+n+' 項到貨'}
   $('#reviewBtn').disabled=false;
 }
 
@@ -307,12 +298,6 @@ $('#reviewBtn').onclick=()=>{
     h+='<table class="sum"><tr><th>品項</th><th>櫃位</th><th>倉庫</th><th>合計</th></tr>';
     S.lines.forEach(l=>{const t=total([l]);const low=l.series!=='全食飲'&&isLow([l],l.min);h+='<tr class="'+(l.tier==='舊'?'old ':'')+(low?'low':'')+'"><td>'+nm(l)+'</td><td>'+v(l.shelf)+'</td><td>'+v(l.wh)+'</td><td>'+(t===null?'':t)+'</td></tr>'});
     h+='</table>';
-  }else{
-    const rows=S.lines.filter(l=>!blank(l.inShelf)||!blank(l.inWh));
-    if(!rows.length)errs.push('尚未填寫任何到貨數量');
-    if(errs.length)h+='<div class="notice warn">'+errs.join('<br>')+'</div>';
-    h+='<div class="sub" style="margin-bottom:8px">'+S.store+'｜'+md($('#date').value)+' 到貨｜'+($('#staff').value||'—')+'</div>';
-    if(rows.length){h+='<table class="sum"><tr><th>品項</th><th>進櫃</th><th>進倉</th></tr>';rows.forEach(l=>{h+='<tr class="'+(l.tier==='舊'?'old':'')+'"><td>'+nm(l)+'</td><td>'+v(l.inShelf)+'</td><td>'+v(l.inWh)+'</td></tr>'});h+='</table>'}
   }
   $('#reviewTitle').textContent=M.name+'｜送出前確認';
   $('#reviewBody').innerHTML=h;$('#submit').disabled=errs.length>0;$('#review').classList.add('show');
@@ -325,7 +310,7 @@ $('#submit').onclick=async()=>{
     const r=await apiPost({pin:ls.get('portal_pin')||'',mode:S.mode,store:S.store,date:$('#date').value,staff:$('#staff').value.trim(),
       lines:S.lines.map(l=>({series:l.series,product:l.product,tier:l.tier,expiry:l.expiry,[M.a]:l[M.a],[M.b]:l[M.b]}))});
     ls.del(dKey());$('#review').classList.remove('show');
-    const meta=S.mode==='count'?S.data.count:S.data.arrival;Object.assign(meta,{date:$('#date').value,staff:$('#staff').value.trim(),at:r.updated});
+    const meta=S.data.count;Object.assign(meta,{date:$('#date').value,staff:$('#staff').value.trim(),at:r.updated});
     S.lines.forEach((l,i)=>{const d=S.data.lines[i];d[M.a]=l[M.a];d[M.b]=l[M.b];if(l.expiry||S.mode==='count')d.expiry=l.expiry});
     msg('已送出 '+S.store+' '+md($('#date').value)+' '+M.name+'（'+r.updated+'），營運端表格已同步。','ok');
     window.scrollTo({top:0,behavior:'smooth'});
