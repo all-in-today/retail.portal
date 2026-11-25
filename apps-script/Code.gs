@@ -107,6 +107,8 @@ function num_(v) {
 function save_(body) {
   const mode = body.mode;
   if (mode !== 'count' && mode !== 'arrival') throw new Error('未知模式');
+  // 庫存盤點日期一律以伺服器的台北時間今天為準，忽略前端傳入的日期（避免誤選前一天）
+  if (mode === 'count') body.date = Utilities.formatDate(new Date(), 'Asia/Taipei', 'yyyy-MM-dd');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(body.date || '')) throw new Error('日期格式錯誤');
   if (!body.staff) throw new Error('請填寫姓名');
 

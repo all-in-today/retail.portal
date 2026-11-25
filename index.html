@@ -107,7 +107,7 @@ input[type=text],input[type=date],input[type=password]{width:100%;height:44px;bo
       <div class="row2 hidden" id="who">
         <div>
           <div class="label" id="dateLabel">日期</div>
-          <input type="date" id="date">
+          <input type="text" id="date" readonly tabindex="-1" style="background:#f4f4f2;color:var(--ink)">
         </div>
         <div>
           <div class="label" id="staffLabel">姓名</div>
@@ -157,10 +157,12 @@ async function apiPost(b){const j=await (await fetch(API,{method:'POST',headers:
 /* 日期 */
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const shift=n=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
+/* 盤點日期固定為台北時間今天，不可更改 */
+const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(new Date());
 const md=s=>{if(!s)return'';const p=s.split('-');return +p[1]+'/'+(+p[2])};
 function hint(){
   const v=$('#date').value;if(!v||!S.mode)return;
-  if(S.mode==='count'){const d=new Date(v+'T00:00:00');d.setDate(d.getDate()+1);$('#dateHint').textContent='記錄 '+md(v)+' 晚班結束時的庫存（'+md(ymd(d))+' 早班盤點）';}
+  if(S.mode==='count')$('#dateHint').textContent='記錄 '+md(v)+' 早班盤點。日期固定為當天，無法更改。';
 }
 function msg(t,type){$('#msg').innerHTML=t?'<div class="notice '+(type||'info')+'">'+t+'</div>':''}
 
@@ -175,7 +177,6 @@ function boot(){
   $('#stores').innerHTML=STORES.map(s=>'<button data-s="'+s+'">'+s+'</button>').join('');
   $('#stores').onclick=e=>{const b=e.target.closest('button');if(b)pickStore(b.dataset.s)};
   document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>pickMode(b.dataset.m));
-  $('#date').onchange=()=>{hint();if(S.mode)build()};
   $('#staff').value=ls.get('portal_staff')||'';
   $('#staff').oninput=()=>ls.set('portal_staff',$('#staff').value);
   const last=ls.get('portal_store');if(last&&STORES.includes(last))pickStore(last);
@@ -202,7 +203,7 @@ function pickMode(m,keepDate){
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   $('#who').classList.remove('hidden');
   $('#dateLabel').textContent=MODE[m].date;$('#staffLabel').textContent=MODE[m].staff;
-  if(!keepDate||!$('#date').value)$('#date').value=m==='count'?shift(-1):shift(0);
+  $('#date').value=today();
   hint();build();
 }
 
@@ -297,7 +298,7 @@ $('#reviewBtn').onclick=()=>{
     const b=S.lines.filter(l=>blank(l.shelf)).length;
     if(errs.length)h+='<div class="notice warn">'+errs.join('<br>')+'</div>';
     if(b)h+='<div class="notice info">櫃位有 '+b+' 項空白，以空白（0）計算。</div>';
-    h+='<div class="sub" style="margin-bottom:8px">'+S.store+'｜'+md($('#date').value)+' 晚班庫存｜'+($('#staff').value||'—')+'</div>';
+    h+='<div class="sub" style="margin-bottom:8px">'+S.store+'｜'+md($('#date').value)+' 早班盤點｜'+($('#staff').value||'—')+'</div>';
     h+='<table class="sum"><tr><th>品項</th><th>櫃位</th><th>倉庫</th><th>合計</th></tr>';
     S.lines.forEach(l=>{const t=total([l]);const low=l.series!=='全食飲'&&isLow([l],l.min);h+='<tr class="'+(l.tier==='舊'?'old ':'')+(low?'low':'')+'"><td>'+nm(l)+'</td><td>'+v(l.shelf)+'</td><td>'+v(l.wh)+'</td><td>'+(t===null?'':t)+'</td></tr>'});
     h+='</table>';
@@ -308,6 +309,10 @@ $('#reviewBtn').onclick=()=>{
 $('#back').onclick=()=>$('#review').classList.remove('show');
 $('#submit').onclick=async()=>{
   const M=MODE[S.mode];
+  if($('#date').value!==today()){   // 頁面跨日未重新整理：改為今天並請人員重新確認
+    $('#review').classList.remove('show');$('#date').value=today();hint();build();
+    msg('日期已更新為今天（'+md(today())+'），請重新確認數量後再送出。','warn');window.scrollTo({top:0,behavior:'smooth'});return;
+  }
   $('#submit').disabled=true;$('#submit').textContent='送出中…';
   try{
     const r=await apiPost({pin:ls.get('portal_pin')||'',mode:S.mode,store:S.store,date:$('#date').value,staff:$('#staff').value.trim(),
